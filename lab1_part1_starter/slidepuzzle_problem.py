@@ -67,11 +67,17 @@ class SlidePuzzleState(StateNode):
         The number 0 represents the blank tile. 
         """
         with open(filename, 'r') as file:
-            # TODO read file and return an initial SlidePuzzleState.
-            # This return statement is just a dummy.
+            file = file.split("\n")
+            n = file[0]
+            rows = [x.strip() for x in file[1::]]
+            tiles = [tuple(map(int, x.split())) for x in rows]
+            for x, row in enumerate(tiles):
+                for y, val in enumerate(row):
+                    if val == 0:
+                        empty = Coordinate(x, y)
             return SlidePuzzleState( 
-                tiles = ((0,),), # tuple of tuple of 0, dummy value
-                empty_pos = Coordinate(0,0), # dummy value
+                tiles = tuple(tiles),
+                empty_pos = empty,
                 parent = None,
                 last_action = None,
                 depth = 0,
@@ -162,7 +168,8 @@ class SlidePuzzleState(StateNode):
         is to be moved into the empty slot. That Coordinate needs to be not out of bounds, and 
         actually adjacent to the emty slot.
         """
-        # TODO implement!
+        if action.col >= 0 and action.row >= 0 and action.col < len(self.tiles) and action.row < len(self.tiles):
+            return abs(action.col - self.empty_pos.col) + abs(action.row - self.empty_pos.row) == 1
         return False
     
 
