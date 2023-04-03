@@ -52,7 +52,6 @@ class GoalSearchAgent():
         """
         raise NotImplementedError
 
-
 class RandomSearch(GoalSearchAgent):
     """ Partial class representing the Random Search strategy.
     To be subclassed (multiple inheritance) with a mixin that
@@ -79,7 +78,6 @@ class RandomSearch(GoalSearchAgent):
         s = random.choice(self.frontier)
         self.frontier.remove(s)
         return s
-
 
 class TreeSearchAlgorithm(GoalSearchAgent):
     """
@@ -110,10 +108,18 @@ class TreeSearchAlgorithm(GoalSearchAgent):
 
         Remember that "tree search" may re-enqueue or re-extend the same state, multiple times.
         """
+        self.enqueue(initial_state)
+        while len(self.frontier > 0 and gui_callback_fn(toExplore)):
+            toExplore = self.dequeue()
+            self.total_extends += 1
+            if toExplore.is_goal_state(): return toExplore
 
-        #TODO implement!
-        return None
-
+            for action in toExplore.get_all_actions():
+                nextState = toExplore.get_next_state(action)
+                if nextState != toExplore:
+                    self.enqueue(nextState, cutoff)
+                    self.total_enqueues += 1
+        return
 
 class DepthFirstSearch(GoalSearchAgent):
     """ Partial class representing the Depth First Search strategy.
@@ -170,8 +176,6 @@ class BreadthFirstSearch(GoalSearchAgent):
         # TODO 
         raise NotImplementedError
 
-
-
 class UniformCostSearch(GoalSearchAgent):
     """ Partial class representing the Uniform Cost Search strategy.
     To be subclassed (multiple inheritance) with a mixin that
@@ -207,7 +211,6 @@ class UniformCostSearch(GoalSearchAgent):
         # TODO 
         raise NotImplementedError
 
-
 class GraphSearchAlgorithm(GoalSearchAgent):
     """
     Mixin class for the graph search (extended state filter) algorithm.
@@ -238,8 +241,6 @@ class GraphSearchAlgorithm(GoalSearchAgent):
         #TODO implement! (You may start by copying your TreeSearch's code)
         return None
 
-
-
 #### Lab 1, Part 2b: Informed Search #################################################
 
 class InformedSearchAgent(GoalSearchAgent):
@@ -259,7 +260,6 @@ class InformedSearchAgent(GoalSearchAgent):
         super().__init__(heuristic = heuristic, *args, **kwargs) # pass any unused parameters to any superclasses
         self.heuristic = heuristic
     
-
 class GreedyBestSearch(InformedSearchAgent):
     """ Partial class representing a search strategy.
     To be subclassed (multiple inheritance) with a mixin that
@@ -290,7 +290,6 @@ class GreedyBestSearch(InformedSearchAgent):
         """  Choose and remove the state with LOWEST ESTIMATED REMAINING COST TO GOAL from the frontier."""
         # TODO 
         raise NotImplementedError
-
 
 class AStarSearch(InformedSearchAgent):
     """ Partial class representing a search strategy.
@@ -323,8 +322,6 @@ class AStarSearch(InformedSearchAgent):
         """  Choose, remove, and return the state with LOWEST ESTIMATED TOTAL PATH COST from the frontier."""
         # TODO 
         raise NotImplementedError
-
-
 
 """ Informed search algorithms can be reconfigured to provide a "closest" answer
 if . This often happens because of early termination (by max length/cost cutoff or time limit).
@@ -361,8 +358,6 @@ class AnytimeSearchAlgorithm(InformedSearchAgent):
         #TODO implement! (You may start by copying your GraphSearch's code)
         return None
 
-
-
 # Collection of all the above. If you write other ones, add them here.
 
 ALGORITHMS : Dict[str, Type[GoalSearchAgent] ] = {
@@ -389,11 +384,9 @@ for alg in ALGORITHMS:
     for strat in STRATEGIES:
         ALL_AGENTS[alg][strat] = type(alg + "-" + strat, (ALGORITHMS[alg], STRATEGIES[strat]), {})
 
-
 ### Completely Optional Extensions ########################################################
 
 """ If you're bored, try any of the following extensions!"""
-
 
 """ A) Investigate a way to determine if a given slide puzzle is solvable without exhausting the whole state space.
  You may want to research the concept of parity. Implement is_solvable and make sure that it returns True on all the
@@ -406,12 +399,10 @@ for alg in ALGORITHMS:
 #     """is this board solvable? return a boolean"""
 #     raise NotImplementedError
 
-
 """ B) A* is optimal, but its memory usage is still prohibitive for large state spaces.
 Investiate and implement one or more of the following: Recursive Best-First Search (RBFS), memory-bounded A* (MA*)
 or simplified memory-bounded A* (SMA*).
 """
-
 
 """ C) Improve upon these implementations! The framework given to you here
 was designed to facilitate learning, not necessarily efficiency. 
