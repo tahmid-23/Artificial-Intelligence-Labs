@@ -110,7 +110,7 @@ class TreeSearchAlgorithm(GoalSearchAgent):
         """
         self.enqueue(initial_state)
         toExplore = initial_state
-        while len(self.frontier) > 0 and gui_callback_fn(toExplore):
+        while len(self.frontier) > 0 and not gui_callback_fn(toExplore):
             toExplore = self.dequeue()
             self.total_extends += 1
             if toExplore.is_goal_state(): return toExplore
