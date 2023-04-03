@@ -117,7 +117,7 @@ class TreeSearchAlgorithm(GoalSearchAgent):
 
             for action in toExplore.get_all_actions():
                 nextState = toExplore.get_next_state(action)
-                if nextState != toExplore:
+                if nextState != toExplore.parent:
                     self.enqueue(nextState, cutoff)
                     self.total_enqueues += 1
         return
