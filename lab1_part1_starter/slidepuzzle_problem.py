@@ -155,8 +155,12 @@ class SlidePuzzleState(StateNode):
         The goal of the slide puzzle is to have the empty spot in the 0th row and 0th col,
         and then the rest of the numbered tiles in order down the rows!
         """
-        # TODO implement!
-        return False
+        size = len(self.tiles)
+        for x in range(size):
+            for y in range(size):
+                if x * size + y != self.tiles[x][y]:
+                    return False
+        return True
     
     # Override
     def is_legal_action(self, action : SlidePuzzleAction) -> bool:
