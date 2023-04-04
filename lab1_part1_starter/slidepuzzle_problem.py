@@ -1,5 +1,5 @@
 # Lab 1, Part 1b: Problem Representation.
-# Name(s): 
+# Name(s): Maxwell Gong, Tahmid Zaman
 
 from __future__ import annotations
 from typing import Optional, Any, Hashable, Sequence, Iterable, Dict, Union, List, Tuple, cast
@@ -180,7 +180,6 @@ class SlidePuzzleState(StateNode):
     # Override
     def get_all_actions(self) -> Iterable[SlidePuzzleAction]:
         """Return all legal actions at this state."""
-        # TODO implement! This is a good candidate for using yield (generator function)
         for x in [-1, 0, 1]:
             for y in [-1, 0, 1]:
                 temp = SlidePuzzleAction(self.empty_pos.row + x, self.empty_pos.col + y)
@@ -216,7 +215,7 @@ class SlidePuzzleState(StateNode):
         tiles[self.empty_pos.row][self.empty_pos.col] = temp
         tiles = [tuple(row) for row in tiles]
         newState = SlidePuzzleState(tuple(tiles),
-                                    Coordinate(action.row, action.col), 
+                                    SlidePuzzleAction(action.row, action.col), 
                                     self, 
                                     self.last_action, 
                                     self.depth + 1, 
