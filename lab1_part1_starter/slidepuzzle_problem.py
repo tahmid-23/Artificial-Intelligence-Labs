@@ -217,7 +217,7 @@ class SlidePuzzleState(StateNode):
         newState = SlidePuzzleState(tuple(tiles),
                                     SlidePuzzleAction(action.row, action.col), 
                                     self, 
-                                    self.last_action, 
+                                    action, 
                                     self.depth + 1, 
                                     self.path_cost + 1)
         return newState
