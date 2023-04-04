@@ -206,9 +206,13 @@ class SlidePuzzleState(StateNode):
 
         -- action is assumed legal (is_legal_action called before), but a ValueError may be passed for illegal actions if desired.
         """
-        # TODO implement! Remember that this returns a NEW state, and doesn't change this one.
-        tiles = self.tiles
-        newState = SlidePuzzleState(tiles, # TODO gotta uhh actually change these
+        # implement! Remember that this returns a NEW state, and doesn't change this one.
+        tiles = [list(row) for row in self.tiles]
+        temp = tiles[action.row][action.col]
+        tiles[action.row][action.col] = 0
+        tiles[self.empty_pos.row][self.empty_pos.col] = temp
+        tiles = [tuple(row) for row in self.tiles]
+        newState = SlidePuzzleState(tuple(tiles),
                                     Coordinate(action.row, action.col), 
                                     self, 
                                     self.last_action, 
