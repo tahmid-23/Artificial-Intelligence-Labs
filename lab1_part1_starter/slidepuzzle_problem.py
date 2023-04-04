@@ -214,7 +214,7 @@ class SlidePuzzleState(StateNode):
         temp = tiles[action.row][action.col]
         tiles[action.row][action.col] = 0
         tiles[self.empty_pos.row][self.empty_pos.col] = temp
-        tiles = [tuple(row) for row in self.tiles]
+        tiles = [tuple(row) for row in tiles]
         newState = SlidePuzzleState(tuple(tiles),
                                     Coordinate(action.row, action.col), 
                                     self, 
