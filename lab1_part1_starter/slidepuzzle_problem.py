@@ -178,10 +178,13 @@ class SlidePuzzleState(StateNode):
     def get_all_actions(self) -> Iterable[SlidePuzzleAction]:
         """Return all legal actions at this state."""
         # TODO implement! This is a good candidate for using yield (generator function)
-        yield from ()
-        # alternatively, return a list, tuple, or use comprehension
-        return []
-        
+        for x in [-1, 0, 1]:
+            for y in [-1, 0, 1]:
+                temp = SlidePuzzleAction(self.empty_pos.row + x, self.empty_pos.col + y)
+                if self.is_legal_action(temp):
+                    yield temp
+        # # alternatively, return a list, tuple, or use comprehension
+        # return []
 
     # Override
     def describe_last_action(self) -> str:
@@ -203,8 +206,15 @@ class SlidePuzzleState(StateNode):
 
         -- action is assumed legal (is_legal_action called before), but a ValueError may be passed for illegal actions if desired.
         """
-       # TODO implement! Remember that this returns a NEW state, and doesn't change this one.
-        return self
+        # TODO implement! Remember that this returns a NEW state, and doesn't change this one.
+        tiles = self.tiles
+        newState = SlidePuzzleState(tiles, # TODO gotta uhh actually change these
+                                    Coordinate(action.row, action.col), 
+                                    self, 
+                                    self.last_action, 
+                                    self.depth + 1, 
+                                    self.path_cost + 1)
+        return newState
         
 
     """ You may add additional methods that may be useful! """
