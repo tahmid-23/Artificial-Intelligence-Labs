@@ -172,7 +172,6 @@ class SlidePuzzleState(StateNode):
         if action.col >= 0 and action.row >= 0 and action.col < len(self.tiles) and action.row < len(self.tiles):
             return abs(action.col - self.empty_pos.col) + abs(action.row - self.empty_pos.row) == 1
         return False
-    
 
     # Override
     def get_all_actions(self) -> Iterable[SlidePuzzleAction]:
