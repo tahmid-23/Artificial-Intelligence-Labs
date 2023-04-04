@@ -67,22 +67,23 @@ class SlidePuzzleState(StateNode):
         The number 0 represents the blank tile. 
         """
         with open(filename, 'r') as file:
-            file = file.split("\n")
-            n = file[0]
+            file = file.read()
+            file = file.strip().split("\n")
+            n = int(file[0])
             rows = [x.strip() for x in file[1::]]
             tiles = [tuple(map(int, x.split())) for x in rows]
             for x, row in enumerate(tiles):
                 for y, val in enumerate(row):
                     if val == 0:
                         empty = Coordinate(x, y)
-            return SlidePuzzleState( 
-                tiles = tuple(tiles),
-                empty_pos = empty,
-                parent = None,
-                last_action = None,
-                depth = 0,
-                path_cost = 0,
-            )
+                        return SlidePuzzleState( 
+                            tiles = tuple(tiles),
+                            empty_pos = empty,
+                            parent = None,
+                            last_action = None,
+                            depth = 0,
+                            path_cost = 0,
+                        )
 
     #Override
     def __init__(self, 
