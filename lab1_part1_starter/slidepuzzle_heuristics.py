@@ -11,7 +11,13 @@ INF = float('inf')
 
 """ Return the Hamming distance (number of tiles out of place) of the SlidePuzzleState """
 def slidepuzzle_hamming(state : SlidePuzzleState)  -> float:
-    raise NotImplementedError
+    size = len(state.tiles)
+    ret = 0
+    for x in range(size):
+        for y in range(size):
+            if size * x + y != state.tiles[x][y]:
+                ret += 1
+    return ret
 
 """ Return the sum of Manhattan distances between tiles and goal of the SlidePuzzleState """
 def slidepuzzle_manhattan(state : SlidePuzzleState)  -> float:
