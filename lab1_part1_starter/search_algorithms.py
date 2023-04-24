@@ -199,14 +199,11 @@ class UniformCostSearch(GoalSearchAgent):
         super().__init__(*args, **kwargs)
         self.frontier = []
 
-
-        
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless path COST exceeds the cutoff """
         if state.depth < cutoff:
             heapq.heappush(self.frontier, (state.path_cost, state))
 
-        
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the state with LOWEST PATH COST from the frontier."""
         return heapq.heappop(self.frontier)[1]
@@ -291,20 +288,16 @@ class GreedyBestSearch(InformedSearchAgent):
         of the remaining cost to goal. 
         """
         super().__init__(heuristic)
-        # TODO initiate frontier data structure
-
-
+        self.frontier = []
         
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless path COST exceeds the cutoff """
-        # TODO 
-        raise NotImplementedError
+        if state.depth < cutoff:
+            heapq.heappush(self.frontier, (self.heuristic(state), state))
 
-        
     def dequeue(self) -> Tuple[float, StateNode]:
         """  Choose and remove the state with LOWEST ESTIMATED REMAINING COST TO GOAL from the frontier."""
-        # TODO 
-        raise NotImplementedError
+        return heapq.heappop(self.frontier)[1]
 
 class AStarSearch(InformedSearchAgent):
     """ Partial class representing a search strategy.
@@ -322,21 +315,16 @@ class AStarSearch(InformedSearchAgent):
         of remaining path cost. 
         """
         super().__init__(heuristic, *args, **kwargs)
-        # TODO initiate frontier data structure
+        self.frontier = []
 
-
-        
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless path COST exceeds the cutoff """
-       # TODO 
-        raise NotImplementedError
-
-
+        if state.depth < cutoff:
+            heapq.heappush(self.frontier, (self.heuristic(state) + state.path_cost, state))
         
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the state with LOWEST ESTIMATED TOTAL PATH COST from the frontier."""
-        # TODO 
-        raise NotImplementedError
+        return heapq.heappop(self.frontier)[1]
 
 """ Informed search algorithms can be reconfigured to provide a "closest" answer
 if . This often happens because of early termination (by max length/cost cutoff or time limit).
