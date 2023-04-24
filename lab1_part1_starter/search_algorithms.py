@@ -333,7 +333,7 @@ This is sometimes known as an "anytime" algorithm, because the algorithm can hav
 *some* useful result anytime the agent needs one.
 """
 
-class AnytimeSearchAlgorithm(InformedSearchAgent):
+class AnytimeSearchAlgorithm(InformedSearchAgent): # only works if you pause before you terminate for some reason
     """
     Mixin class for "anytime" graph search algorithm.
 
