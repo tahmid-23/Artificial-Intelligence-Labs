@@ -250,9 +250,6 @@ class GraphSearchAlgorithm(GoalSearchAgent):
                     self.total_enqueues += 1
         return
 
-        #TODO implement! (You may start by copying your TreeSearch's code)
-        return None
-
 #### Lab 1, Part 2b: Informed Search #################################################
 
 class InformedSearchAgent(GoalSearchAgent):
@@ -358,8 +355,33 @@ class AnytimeSearchAlgorithm(InformedSearchAgent):
         it should always return the lowest-cost StateNode path  to the state closest* to the solution found so far.
         *Closest according to the agent's heuristic.
         """
-        #TODO implement! (You may start by copying your GraphSearch's code)
-        return None
+        ext_filter : Set[StateNode] = set() # Create an empty extended state filter
+
+        self.enqueue(initial_state)
+        toExplore = initial_state
+        pathCostMin = toExplore.path_cost
+        currentMin = toExplore
+        heuristicMin = self.heuristic(toExplore)
+        while len(self.frontier) > 0 and not gui_callback_fn(toExplore):
+            toExplore = self.dequeue()
+            self.total_extends += 1
+            if toExplore.is_goal_state(): return toExplore
+
+            for action in toExplore.get_all_actions():
+                nextState = toExplore.get_next_state(action)
+                if nextState not in ext_filter:
+                    self.enqueue(nextState, cutoff)
+                    ext_filter.add(nextState)
+                    nextHeur = self.heuristic(nextState)
+                    if nextHeur < heuristicMin: # if we get closer we set this as the new standard
+                        heuristicMin = nextHeur
+                        pathCostMin = nextState.path_cost
+                        currentMin = nextState
+                    if nextState.path_cost < pathCostMin: # only changes if it's "close"
+                        pathCostMin = nextState.path_cost
+                        currentMin = nextState
+                    self.total_enqueues += 1
+        return currentMin
 
 # Collection of all the above. If you write other ones, add them here.
 
