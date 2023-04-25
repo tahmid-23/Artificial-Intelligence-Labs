@@ -377,7 +377,7 @@ class AnytimeSearchAlgorithm(InformedSearchAgent): # only works if you pause bef
                         heuristicMin = nextHeur
                         pathCostMin = nextState.path_cost
                         currentMin = nextState
-                    if nextState.path_cost < pathCostMin: # only changes if it's "close"
+                    if nextHeur == heuristicMin and nextState.path_cost < pathCostMin: # only changes if it's "close"
                         pathCostMin = nextState.path_cost
                         currentMin = nextState
                     self.total_enqueues += 1
