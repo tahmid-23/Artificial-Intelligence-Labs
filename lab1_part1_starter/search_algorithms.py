@@ -1,4 +1,4 @@
-# Lab 1 (Part 1a and 2a)
+# Lab 1 (Part 1a, 2a, and 2d)
 # Name(s): Maxwell Gong, Tahmid Zaman
 
 from __future__ import annotations

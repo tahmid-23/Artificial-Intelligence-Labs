@@ -1,5 +1,5 @@
-# Lab 1, Part 2a: Heuristics.
-# Name(s): 
+# Lab 1, Part 2b: Heuristics.
+# Name(s): Maxwell Gong, Tahmid Zaman
 from search_heuristics import *
 from slidepuzzle_problem import *
 

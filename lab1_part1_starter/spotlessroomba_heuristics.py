@@ -1,3 +1,5 @@
+# Lab 1, Part 2c: Heuristics.
+# Name(s): Maxwell Gong, Tahmid Zaman
 import heapq
 from search_heuristics import *
 from spotlessroomba_problem import *
