@@ -14,6 +14,26 @@ so it optimistically predicts that no intermediate tiles must be cleaned and com
 This is not consistent: counterexample
 
 We can represent the roomba problem as a metric space in R2 using the manhattan distance as a metric.
+
+Proof that manhattan distance is a metric:
+Let p1 = (x1, y1), p2 = (x2, y2), p3 = (x3, y3), p1 != p2, p2 != p3, p1 != p3
+
+1. 
+a. d(p1, p2) != 0
+d(p1, p2) = |x1 - x2| + |y1 - y2|
+x1 != x2, y1 != y2 -> |x1 - x2| != 0, |y1 - y2| != 0 -> d(p1, p2) != 0
+
+b. d(p1, p1) = 0
+d(p1, p1) = |x1 - x1| + |y1 - y1| = 0
+
+2. d(p, q) = 0
+d(p1, p2) = |x1 - x2| + |y1 - y2| = |-(x2 - x1)| + |-(y2 - y1)| = |x2 - x1| + |y2 - y1| = d(p2, p1)
+
+3. d(p1, p3) <= d(p1, p2) + d(p2, p3) (triangle inequality)
+d(p1, p3) = |x1 - x3| + |y1 - y3| = |(x1 - x2) + (x2 - x3)| + |(y1 - y2) + (y2 - y3)|
+By the triangle inequality, d(p1, p3) <= |x1 - x2| + |x2 - x3| + |y1 - y2| + |y2 - y3| = d(p1, p2) + d(p2, p3)
+
+
 Dirty spots at (-1, -1), (1, 2), (3, 3)
 Suppose A = (0, 0), B = (0, 1)
 
@@ -53,7 +73,7 @@ def spotlessroomba_closest_plus_farthest_heuristic(state : SpotlessRoombaState) 
 """
 This runs Prim's algorithm to find the edge weights of the minimum spanning tree of the graph where
 V = dirty tiles + start tile
-E = manhattan path between dirty tiles
+E = manhattan distance between all pairs of dirty tiles
 Edge weights are added to the heuristic as the algorithm runs.
 
 The minimum cost to reach each dirty tile is no smaller than the sum of the edge weights between all nodes.
