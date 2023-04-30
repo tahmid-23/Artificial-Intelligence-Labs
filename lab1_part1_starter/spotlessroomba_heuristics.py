@@ -29,7 +29,7 @@ If so, return 0
 Edge case: only one dirty tile
 If so, use regular manhattan
 """
-def spotlessroomba_min_spot_plus_farthest_heuristic(state : SpotlessRoombaState)  -> float:
+def spotlessroomba_closest_plus_farthest_heuristic(state : SpotlessRoombaState)  -> float:
     if len(state.dirty_locations) == 0:
         return 0
 
@@ -100,11 +100,8 @@ def spotlessroomba_manhattan_mst(state : SpotlessRoombaState)  -> float:
 
     return h
 
-# TODO if you wish, implement more heuristics!
-
-# TODO Update heuristic names and functions below. If you make more than two, add them here.
 SPOTLESSROOMBA_HEURISTICS = {"Zero" : zero_heuristic,
                         "Arbitrary": arbitrary_heuristic, 
-                        "Custom Heur. 1": spotlessroomba_min_spot_plus_farthest_heuristic,
-                        "Custom Heur. 2" : spotlessroomba_manhattan_mst
+                        "Closest-Farthest": spotlessroomba_closest_plus_farthest_heuristic,
+                        "Minimum Spanning Tree" : spotlessroomba_manhattan_mst
                         }
