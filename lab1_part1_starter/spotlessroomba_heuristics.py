@@ -51,15 +51,39 @@ def spotlessroomba_closest_plus_farthest_heuristic(state : SpotlessRoombaState) 
     return min_dist
 
 """
-This first computes the minimum manhattan distance to any single dirty spot.
-That heuristic is already known to be admissible and consistent.
-
-Then, we run Prim's algorithm to find the edge weights of the minimum spanning tree of the graph where
-V = dirty tiles
+This runs Prim's algorithm to find the edge weights of the minimum spanning tree of the graph where
+V = dirty tiles + start tile
 E = manhattan path between dirty tiles
 Edge weights are added to the heuristic as the algorithm runs.
 
-Traversing the MST is admissible and consistent for the same reason that the closest dirty tile heuristic is
+The minimum cost to reach each dirty tile is no smaller than the sum of the edge weights between all nodes.
+Therefore, the heuristic is admissible.
+
+
+Define MST(X) as the sum of the edge weights of the graph with vertices in X and all edges between vertices.
+Let s, s' be two possible start nodes. Use the same metric space as in the previous heuristic.
+
+Define (V_s, E_s) and (V_s', E_s') as the aforementioned V and E with s and s' as the respective starting nodes. 
+Since we are considering a tree, if we ignore the first cost from the root to a dirty tile, the sum of the edge weights are equal.
+In other words, MST(V_s \ s) = MST(V_s' \ s').
+Define x_s as the node adjacent to s in the minimum spanning tree of V_s, and x_s' similarly.
+x_s is closest to s, and x_s' is closest to s' since these edges are a result of adding an edge from s to an element of V_s (or s' to an element of V_s' respectively).
+MST(V_s) = MST(V_s \ s) + d(s, x_s)
+MST(V_s') = MST(V_s' \ s') + d(s', x_s')
+h(s) = MST(V_s) and h(s') = MST(V_s') as the definition of our heuristic.
+
+h(s) - h(s') = MST(V_s \ s) + d(s, x_s) - (MST(V_s' \ s') + d(s', x_s')) = d(s, x_s) - d(s', x_s')
+
+We want to prove that d(s, x_s) - d(s', x_s') <= d(s, s').
+We know that d(s, x_s) <= d(s, x_s'), since x_s must not have been farther to s than x_s'.
+d(s, x_s') <= d(s, s') + d(s', x_s') by the triangle inequality
+d(s, x_s) <= d(s, x_s') <= d(s, s') + d(s', x_s') by combining the two inequalities
+If we now consider the ends of the inequality,
+d(s, x_s) - d(s', x_s') <= d(s, s')
+d(s, s') is defined as the cost between s and s', c. Therefore,
+d(s, x_s) - d(s', x_s') <= c
+h(s) - h(s') <= c
+QED
 
 Edge case: no dirty tiles
 If so, return 0
@@ -67,23 +91,18 @@ If so, return 0
 def spotlessroomba_manhattan_mst(state : SpotlessRoombaState)  -> float:
     if len(state.dirty_locations) == 0:
         return 0
-
-    h = INF
-
-    for dirty_tile in state.dirty_locations:
-        h = min(h, abs(dirty_tile.row - state.position.row) + abs(dirty_tile.col - state.position.col))
-
+    
+    h = 0
     pq = []
-    visited = [False] * len(state.dirty_locations)
+    visited = [False] * (len(state.dirty_locations) + 1)
     visited[0] = True
 
-    root_tile = state.dirty_locations[0]
-    for end_index, end_tile in enumerate(state.dirty_locations):
+    for end_index, end_tile in enumerate(state.dirty_locations, 1):
         if end_index != 0:
-            heapq.heappush(pq, (abs(root_tile.row - end_tile.row) + abs(root_tile.col - end_tile.col), end_index, end_tile))
+            heapq.heappush(pq, (abs(state.position.row - end_tile.row) + abs(state.position.col - end_tile.col), end_index, end_tile))
 
     edge_count = 0
-    while edge_count < len(state.dirty_locations) - 1:
+    while edge_count < len(state.dirty_locations):
         (dist, end_index, end_tile) = heapq.heappop(pq)
         
         if visited[end_index]:
@@ -91,7 +110,7 @@ def spotlessroomba_manhattan_mst(state : SpotlessRoombaState)  -> float:
 
         visited[end_index] = True
 
-        for next_index, next_tile in enumerate(state.dirty_locations):
+        for next_index, next_tile in enumerate(state.dirty_locations, 1):
             if not visited[next_index]:
                 heapq.heappush(pq, (abs(end_tile.row - next_tile.row) + abs(end_tile.col - next_tile.col), next_index, next_tile))
         
