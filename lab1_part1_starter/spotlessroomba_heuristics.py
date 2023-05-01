@@ -17,6 +17,25 @@ This is not consistent: counterexample
 
 We can represent the roomba problem as a metric space in R2 using the manhattan distance as a metric.
 
+Proof that manhattan distance is a metric:
+Let p1 = (x1, y1), p2 = (x2, y2), p3 = (x3, y3), p1 != p2, p2 != p3, p1 != p3
+
+1. 
+a. d(p1, p2) != 0
+d(p1, p2) = |x1 - x2| + |y1 - y2|
+x1 != x2, y1 != y2 -> |x1 - x2| != 0, |y1 - y2| != 0 -> d(p1, p2) != 0
+
+b. d(p1, p1) = 0
+d(p1, p1) = |x1 - x1| + |y1 - y1| = 0
+
+2. d(p, q) = 0
+d(p1, p2) = |x1 - x2| + |y1 - y2| = |-(x2 - x1)| + |-(y2 - y1)| = |x2 - x1| + |y2 - y1| = d(p2, p1)
+
+3. d(p1, p3) <= d(p1, p2) + d(p2, p3) (triangle inequality)
+d(p1, p3) = |x1 - x3| + |y1 - y3| = |(x1 - x2) + (x2 - x3)| + |(y1 - y2) + (y2 - y3)|
+By the triangle inequality, d(p1, p3) <= |x1 - x2| + |x2 - x3| + |y1 - y2| + |y2 - y3| = d(p1, p2) + d(p2, p3)
+
+
 Dirty spots at (-1, -1), (1, 2), (3, 3)
 Suppose A = (0, 0), B = (0, 1)
 
@@ -54,66 +73,76 @@ def spotlessroomba_closest_plus_farthest_heuristic(state : SpotlessRoombaState) 
     return min_dist
 
 """
-This is similar to the previous heuristic.
-However, to compute the farthest tile, it uses dijkstra's algorithm.
+This runs Prim's algorithm to find the edge weights of the minimum spanning tree of the graph where
+V = dirty tiles + start tile
+E = manhattan distance between all pairs of dirty tiles
+Edge weights are added to the heuristic as the algorithm runs.
 
-This heuristic does not compute actual distances due to walls or carpets, so it is still a heuristic, if perhaps a slower one.
+The minimum cost to reach each dirty tile is no smaller than the sum of the edge weights between all nodes.
+Therefore, the heuristic is admissible.
 
-This is admissible since the roomba must first visit a closest tile, and then it must visit multiple tiles on its path.
-This concept is basically the same as the previous heuristic.
 
-The previous counterexample applies here.
+Define MST(X) as the sum of the edge weights of the graph with vertices in X and all edges between vertices.
+Let s, s' be two possible start nodes. Use the same metric space as in the previous heuristic.
+
+Define (V_s, E_s) and (V_s', E_s') as the aforementioned V and E with s and s' as the respective starting nodes. 
+Since we are considering a tree, if we ignore the first cost from the root to a dirty tile, the sum of the edge weights are equal.
+In other words, MST(V_s \ s) = MST(V_s' \ s').
+Define x_s as the node adjacent to s in the minimum spanning tree of V_s, and x_s' similarly.
+x_s is closest to s, and x_s' is closest to s' since these edges are a result of adding an edge from s to an element of V_s (or s' to an element of V_s' respectively).
+MST(V_s) = MST(V_s \ s) + d(s, x_s)
+MST(V_s') = MST(V_s' \ s') + d(s', x_s')
+h(s) = MST(V_s) and h(s') = MST(V_s') as the definition of our heuristic.
+
+h(s) - h(s') = MST(V_s \ s) + d(s, x_s) - (MST(V_s' \ s') + d(s', x_s')) = d(s, x_s) - d(s', x_s')
+
+We want to prove that d(s, x_s) - d(s', x_s') <= d(s, s').
+We know that d(s, x_s) <= d(s, x_s'), since x_s must not have been farther to s than x_s'.
+d(s, x_s') <= d(s, s') + d(s', x_s') by the triangle inequality
+d(s, x_s) <= d(s, x_s') <= d(s, s') + d(s', x_s') by combining the two inequalities
+If we now consider the ends of the inequality,
+d(s, x_s) - d(s', x_s') <= d(s, s')
+d(s, s') is defined as the cost between s and s', c. Therefore,
+d(s, x_s) - d(s', x_s') <= c
+h(s) - h(s') <= c
+QED
+
+Edge case: no dirty tiles
+If so, return 0
 """
-def spotlessroomba_dirty_dijkstra(state : SpotlessRoombaState)  -> float:
+def spotlessroomba_manhattan_mst(state : SpotlessRoombaState)  -> float:
     if len(state.dirty_locations) == 0:
         return 0
-
-    if len(state.dirty_locations) == 1:
-        return abs(state.dirty_locations[0].row - state.position.row) + abs(state.dirty_locations[0].col - state.position.col)
     
-    min_tile_index = None
-    h = INF
+    h = 0
+    pq = []
+    visited = [False] * (len(state.dirty_locations) + 1)
+    visited[0] = True
 
-    for i, dirty_tile in enumerate(state.dirty_locations):
-        dist = abs(dirty_tile.row - state.position.row) + abs(dirty_tile.col - state.position.col)
-        if dist < h:
-            min_tile_index = i
-            h = dist
+    for end_index, end_tile in enumerate(state.dirty_locations, 1):
+        if end_index != 0:
+            heapq.heappush(pq, (abs(state.position.row - end_tile.row) + abs(state.position.col - end_tile.col), end_index, end_tile))
 
-    distances = [INF] * len(state.dirty_locations)
-    visited = [False] * len(state.dirty_locations)
+    edge_count = 0
+    while edge_count < len(state.dirty_locations):
+        (dist, end_index, end_tile) = heapq.heappop(pq)
+        
+        if visited[end_index]:
+            continue
 
-    distances[min_tile_index] = 0
+        visited[end_index] = True
 
-    for _ in range(len(state.dirty_locations)):
-        min_tile_index = None
-        min_tile = None
-        min_dist = INF
+        for next_index, next_tile in enumerate(state.dirty_locations, 1):
+            if not visited[next_index]:
+                heapq.heappush(pq, (abs(end_tile.row - next_tile.row) + abs(end_tile.col - next_tile.col), next_index, next_tile))
+        
+        h += dist
+        edge_count += 1
 
-        for i, tile in enumerate(state.dirty_locations):
-            dist = distances[i]
-            if not visited[i] and dist < min_dist:
-                min_tile_index = i
-                min_tile = tile
-                min_dist = dist
-
-        visited[min_tile_index] = True
-
-        for i, tile in enumerate(state.dirty_locations):
-            if not visited[i]:
-                new_dist = min_dist + abs(min_tile.col - tile.col) + abs(min_tile.row - tile.row)
-                if new_dist < distances[i]:
-                    distances[i] = new_dist
-
-    max_dist = -INF
-    for dist in distances:
-        max_dist = max(max_dist, dist)
-
-    h += max_dist
     return h
 
 SPOTLESSROOMBA_HEURISTICS = {"Zero" : zero_heuristic,
                         "Arbitrary": arbitrary_heuristic, 
                         "Closest-Farthest": spotlessroomba_closest_plus_farthest_heuristic,
-                        "Closest-Dijkstra" : spotlessroomba_dirty_dijkstra
+                        "Minimum Spanning Tree" : spotlessroomba_manhattan_mst
                         }
