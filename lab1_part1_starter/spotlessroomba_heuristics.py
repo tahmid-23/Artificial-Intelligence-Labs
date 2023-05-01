@@ -20,22 +20,6 @@ We can represent the roomba problem as a metric space in R2 using the manhattan 
 Proof that manhattan distance is a metric:
 Let p1 = (x1, y1), p2 = (x2, y2), p3 = (x3, y3), p1 != p2, p2 != p3, p1 != p3
 
-1. 
-a. d(p1, p2) != 0
-d(p1, p2) = |x1 - x2| + |y1 - y2|
-x1 != x2, y1 != y2 -> |x1 - x2| != 0, |y1 - y2| != 0 -> d(p1, p2) != 0
-
-b. d(p1, p1) = 0
-d(p1, p1) = |x1 - x1| + |y1 - y1| = 0
-
-2. d(p, q) = 0
-d(p1, p2) = |x1 - x2| + |y1 - y2| = |-(x2 - x1)| + |-(y2 - y1)| = |x2 - x1| + |y2 - y1| = d(p2, p1)
-
-3. d(p1, p3) <= d(p1, p2) + d(p2, p3) (triangle inequality)
-d(p1, p3) = |x1 - x3| + |y1 - y3| = |(x1 - x2) + (x2 - x3)| + |(y1 - y2) + (y2 - y3)|
-By the triangle inequality, d(p1, p3) <= |x1 - x2| + |x2 - x3| + |y1 - y2| + |y2 - y3| = d(p1, p2) + d(p2, p3)
-
-
 Dirty spots at (-1, -1), (1, 2), (3, 3)
 Suppose A = (0, 0), B = (0, 1)
 
@@ -78,8 +62,10 @@ V = dirty tiles + start tile
 E = manhattan distance between all pairs of dirty tiles
 Edge weights are added to the heuristic as the algorithm runs.
 
-The minimum cost to reach each dirty tile is no smaller than the sum of the edge weights between all nodes.
-Therefore, the heuristic is admissible.
+A path that reaches every single dirty tile is a spanning tree of the dirty tiles.
+Therefore, the minimum spanning tree of the set of dirty tiles is less than the cost required to reach every dirty tile.
+We must first reach a dirty tile, so we choose the closest one.
+Since this is a lower bound on the cost to reach a dirty tile and then reach every other dirty tile, this is admissible.
 
 
 Define MST(X) as the sum of the edge weights of the graph with vertices in X and all edges between vertices.
